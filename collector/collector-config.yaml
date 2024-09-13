@@ -45,4 +45,3 @@ service:
       receivers: [otlp]
       processors: [batch, memory_limiter, resourcedetection, resource]
       exporters: [googlemanagedprometheus]
-# [END cloudrun_mc_custom_metrics_otel_config]

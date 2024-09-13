@@ -66,11 +66,9 @@ func setupCounter(ctx context.Context) func(context.Context) error {
 	)
 
 	meter := provider.Meter("santashjena.com/metrics")
-	counter, err = meter.Int64Counter("santash-shubham")
+	counter, err = meter.Int64Counter("santash-counter")
 	if err != nil {
 		log.Fatalf("Error creating counter: %s", err)
 	}
 	return provider.Shutdown
 }
-
-// [END cloudrun_mc_custom_metrics]
