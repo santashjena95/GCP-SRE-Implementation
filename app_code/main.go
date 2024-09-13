@@ -66,7 +66,7 @@ func setupCounter(ctx context.Context) func(context.Context) error {
 	)
 
 	meter := provider.Meter("santashjena.com/metrics")
-	counter, err = meter.Int64Counter("santash-counter")
+	counter, err = meter.Int64Counter("santash-sre-counter")
 	if err != nil {
 		log.Fatalf("Error creating counter: %s", err)
 	}
