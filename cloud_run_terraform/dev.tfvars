@@ -1,0 +1,6 @@
+run_name                  = ""
+region                    = ""
+ingress_service_name      = ""
+ingress_image             = ""
+otel_sidecar_service_name = ""
+otel_sidecar_image        = ""
