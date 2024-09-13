@@ -1,0 +1,1 @@
+# This repo deploys cloud run using terraform with opentelemetry as sidecar container
