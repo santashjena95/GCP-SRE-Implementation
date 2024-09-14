@@ -43,15 +43,24 @@ jobs:
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
       - name: Build image mainapp
-        run: docker build -t ${{ env.GAR_LOCATION }}/mainapp:latest  .
+        run: docker build -t ${{ env.GAR_LOCATION }}/mainapp:${{ github.sha }} .
         working-directory: app_code
 
       - name: Push image mainapp
-        run: docker push ${{ env.GAR_LOCATION }}/mainapp:latest
+        run: docker push ${{ env.GAR_LOCATION }}/mainapp:${{ github.sha }}
 
       - name: Build image sidecar
-        run: docker build -t ${{ env.GAR_LOCATION }}/otelsidecar:latest  .
+        run: docker build -t ${{ env.GAR_LOCATION }}/otelsidecar:${{ github.sha }} .
         working-directory: collector
 
       - name: Push image sidecar
-        run: docker push ${{ env.GAR_LOCATION }}/otelsidecar:latest
+        run: docker push ${{ env.GAR_LOCATION }}/otelsidecar:${{ github.sha }}
+
+      - name: Save SHA to file
+        run: echo "${{ github.sha }}" > sha.txt
+
+      - name: Upload SHA file as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pushtoartifact-sha
+          path: sha.txt
