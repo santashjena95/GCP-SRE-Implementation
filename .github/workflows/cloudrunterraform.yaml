@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: 'terraform-cloud-run'
     runs-on: ubuntu-latest
     environment: production
 
