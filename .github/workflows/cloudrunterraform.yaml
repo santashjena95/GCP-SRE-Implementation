@@ -2,7 +2,7 @@ name: TerraformCloudRun
 
 on:
   workflow_run:
-        workflows: ["Build and Push to Artifact Registry"]
+        workflows: ["BuildandPushtoArtifactRegistry"]
         types:
           - completed
   push:
@@ -35,7 +35,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Get run ID of "Build and Push to Artifact Registry" workflow
+    - name: Get run ID of "BuildandPushtoArtifactRegistry" workflow
       run: |
         WF_NAME="Build and Push to Artifact Registry"
         RUN_ID=`gh run list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
@@ -44,7 +44,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_PAT }}
 
-    - name: Download artifact from "Build and Push to Artifact Registry" workflow
+    - name: Download artifact from "BuildandPushtoArtifactRegistry" workflow
       uses: actions/download-artifact@v4
       with:
         name: sha-file
