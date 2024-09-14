@@ -43,11 +43,11 @@ data "google_iam_policy" "noauth" {
   }
 }
 
-resource "google_cloud_run_service_iam_policy" "noauth" {
+resource "google_cloud_run_v2_service_iam_policy" "noauth" {
   count       = var.public_cloud_run ? 1 : 0
-  location    = google_cloud_run_service.run.location
-  project     = google_cloud_run_service.run.project
-  service     = google_cloud_run_service.run.name
+  location    = google_cloud_run_v2_service.run.location
+  project     = google_cloud_run_v2_service.run.project
+  service     = google_cloud_run_v2_service.run.name
 
   policy_data = data.google_iam_policy.noauth.policy_data
 }
