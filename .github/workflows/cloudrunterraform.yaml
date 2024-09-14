@@ -36,6 +36,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Get run ID of "BuildandPushtoArtifactRegistry" workflow
+      id: get-run-id
       run: |
         WF_NAME="BuildandPushtoArtifactRegistry"
         RUN_ID=`gh run list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
