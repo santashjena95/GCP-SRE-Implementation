@@ -20,9 +20,6 @@ on:
   # For running Github actions manually from UI
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   terraform:
     name: 'terraform-cloud-run'
@@ -38,6 +35,17 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Download SHA file
+      uses: actions/download-artifact@v3
+      with:
+        name: sha-file
+
+    - name: Read SHA from file
+      id: get-sha
+      run: |
+        SHA=$(cat sha.txt)
+        echo "SHA=$SHA" >> $GITHUB_ENV
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
@@ -52,11 +60,11 @@ jobs:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
     - name: Terraform Plan
-      run: terraform plan -var="ingress_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/mainapp:${{ github.event.workflow_run.head_commit }}" -var="otel_sidecar_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/otelsidecar:${{ github.event.workflow_run.head_commit }}" -var-file=dev.tfvars
+      run: terraform plan -var="ingress_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/mainapp:${{ env.SHA }}" -var="otel_sidecar_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/otelsidecar:${{ env.SHA }}" -var-file=dev.tfvars
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
     - name: Terraform Apply
-      run: terraform apply -var="ingress_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/mainapp:${{ github.event.workflow_run.head_commit }}" -var="otel_sidecar_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/otelsidecar:${{ github.event.workflow_run.head_commit }}" -var-file=dev.tfvars -auto-approve
+      run: terraform apply -var="ingress_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/mainapp:${{ env.SHA }}" -var="otel_sidecar_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/otelsidecar:${{ env.SHA }}" -var-file=dev.tfvars -auto-approve
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}

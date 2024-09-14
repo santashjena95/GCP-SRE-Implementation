@@ -56,3 +56,12 @@ jobs:
 
       - name: Push image sidecar
         run: docker push ${{ env.GAR_LOCATION }}/otelsidecar:${{ github.sha }}
+
+      - name: Save SHA to file
+        run: echo "${{ github.sha }}" > sha.txt
+
+      - name: Upload SHA file as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sha-file
+          path: sha.txt
