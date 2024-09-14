@@ -1,5 +1,5 @@
 module "cloud_run" {
-    source                    ="../module"
+    source                    ="../module/run"
     run_name                  = var.run_name
     region                    = var.region
     ingress_service_name      = var.ingress_service_name

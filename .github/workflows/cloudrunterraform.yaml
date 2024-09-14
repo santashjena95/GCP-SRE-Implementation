@@ -1,0 +1,56 @@
+name: Terraform Cloud Run
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - cloud_run_terraform/**
+      - module/run/**
+      - .github/workflows/cloudrunterraform.yaml
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - cloud_run_terraform/**
+      - module/run/**
+      - .github/workflows/cloudrunterraform.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: production
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: cloud_run_terraform
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      run: terraform init
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Terraform Validate
+      run: terraform Validate
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Terraform Plan
+      run: terraform plan -var-file=dev.tfvars
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Terraform Apply
+      run: terraform apply -var-file=dev.tfvars -auto-approve
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
