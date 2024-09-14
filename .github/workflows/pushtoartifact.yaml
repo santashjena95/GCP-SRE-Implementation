@@ -3,8 +3,17 @@ name: Build and Push to Artifact Registry
 on:
   push:
     branches: ["main"]
+    paths:
+      - app_code/**
+      - collector/**
+      - .github/workflows/pushtoartifact.yaml
+    
   pull_request:
     branches: ["main"]
+    paths:
+      - app_code/**
+      - collector/**
+      - .github/workflows/pushtoartifact.yaml
 
 env:
   PROJECT_ID: sre-project-poc
