@@ -15,7 +15,6 @@ import (
 )
 
 var counter metric.Int64Counter
-var serviceName string
 
 func main() {
 	ctx := context.Background()
@@ -42,7 +41,6 @@ func setupCounter(ctx context.Context) func(context.Context) error {
 	if serviceName == "" {
 		serviceName = "sample-cloud-run-app"
 	}
-	log.Printf("Error creating 60: %v", serviceName)
 	r, err := resource.Merge(
 		resource.Default(),
 		resource.NewWithAttributes(
@@ -65,8 +63,8 @@ func setupCounter(ctx context.Context) func(context.Context) error {
 		sdkmetric.WithResource(r),
 	)
 
-	meter := provider.Meter("santashjena.com/metrics")
-	counter, err = meter.Int64Counter("santash-sre-counter")
+	meter := provider.Meter("example.com/metrics")
+	counter, err = meter.Int64Counter("sidecar-sample-counter")
 	if err != nil {
 		log.Fatalf("Error creating counter: %s", err)
 	}

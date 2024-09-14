@@ -1,7 +1,7 @@
 resource "google_cloud_run_v2_service" "run" {
   name     = var.run_name
   location = var.region
-   launch_stage = "BETA"
+  launch_stage = "BETA"
   ingress = "INGRESS_TRAFFIC_ALL"
   template {
     containers {

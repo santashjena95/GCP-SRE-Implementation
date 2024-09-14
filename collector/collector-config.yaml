@@ -31,6 +31,8 @@ processors:
       action: upsert
       # parse service name from K_SERVICE Cloud Run variable                                                                                                                                       
     - key: service.name
+      value: ${env:K_SERVICE}
+      action: insert
       
 exporters:
   googlemanagedprometheus: # Note: this is intentionally left blank   
