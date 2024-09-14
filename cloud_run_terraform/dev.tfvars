@@ -1,3 +1,4 @@
+project_id                 = "sre-project-poc"
 run_name                  = "otel-run"
 region                    = "us-central1"
 ingress_service_name      = "app"
