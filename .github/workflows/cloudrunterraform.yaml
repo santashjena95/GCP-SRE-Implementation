@@ -19,6 +19,7 @@ on:
       - .github/workflows/cloudrunterraform.yaml
   # For running Github actions manually from UI
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
