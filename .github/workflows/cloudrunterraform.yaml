@@ -52,11 +52,11 @@ jobs:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
     - name: Terraform Plan
-      run: terraform plan -var="ingress_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/mainapp:${{ github.event.workflow_run.head_commit }}" -var="otel_sidecar_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/otelsidecar:${{ env.SHA }}" -var-file=dev.tfvars
+      run: terraform plan -var="ingress_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/mainapp:${{ github.event.workflow_run.head_commit }}" -var="otel_sidecar_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/otelsidecar:${{ github.event.workflow_run.head_commit }}" -var-file=dev.tfvars
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
     - name: Terraform Apply
-      run: terraform apply -var="ingress_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/mainapp:${{ github.event.workflow_run.head_commit }}" -var="otel_sidecar_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/otelsidecar:${{ env.SHA }}" -var-file=dev.tfvars -auto-approve
+      run: terraform apply -var="ingress_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/mainapp:${{ github.event.workflow_run.head_commit }}" -var="otel_sidecar_image=us-central1-docker.pkg.dev/sre-project-poc/otel-run/otelsidecar:${{ github.event.workflow_run.head_commit }}" -var-file=dev.tfvars -auto-approve
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
