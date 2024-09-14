@@ -51,7 +51,6 @@ jobs:
         name: sha-file
         github-token: ${{ secrets.GH_PAT }}
         run-id: ${{ steps.get-run-id.outputs.run-id }}
-        path: .
 
     - name: Show downloaded files
       run: ls /home/runner/work/GCP-SRE-Implementation/GCP-SRE-Implementation -la
@@ -59,7 +58,7 @@ jobs:
     - name: Read SHA from file
       id: get-sha
       run: |
-        SHA=$(cat sha.txt)
+        SHA=$(cat /home/runner/work/GCP-SRE-Implementation/GCP-SRE-Implementation/sha.txt)
         echo "SHA=$SHA" >> $GITHUB_ENV
 
     - name: Setup Terraform
