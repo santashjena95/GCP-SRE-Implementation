@@ -1,6 +1,10 @@
 name: Terraform Cloud Run
 
 on:
+  workflow_run:
+        workflows: ["Build and Push to Artifact Registry"]
+        types:
+          - completed
   push:
     branches: [ "main" ]
     paths:
