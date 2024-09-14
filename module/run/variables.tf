@@ -1,8 +1,3 @@
-variable "project_id" {
-  type        = string
-  description = "The project ID of the cloud run service"
-}
-
 variable "run_name" {
   type        = string
   description = "The name of the cloud run service"
