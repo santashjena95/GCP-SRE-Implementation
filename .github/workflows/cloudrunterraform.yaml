@@ -1,4 +1,4 @@
-name: Terraform Cloud Run
+name: TerraformCloudRun
 
 on:
   workflow_run:
