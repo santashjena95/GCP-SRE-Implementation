@@ -35,3 +35,9 @@ variable "otel_sidecar_image" {
   type        = string
   description = "Image for the otel sidecar container service"
 }
+
+variable "public_cloud_run" {
+  type        = bool
+  description = "Whether the cloud run will be publcily available or not"
+  default     = true
+}
