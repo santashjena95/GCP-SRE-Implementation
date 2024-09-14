@@ -14,6 +14,7 @@ on:
       - app_code/**
       - collector/**
       - .github/workflows/pushtoartifact.yaml
+  workflow_dispatch:
 
 env:
   PROJECT_ID: sre-project-poc
