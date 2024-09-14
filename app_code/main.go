@@ -33,13 +33,13 @@ func main() {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	counter.Add(context.Background(), 100)
-	fmt.Fprintln(w, "Incremented sidecar_sample_counter metric!")
+	fmt.Fprintln(w, "Incremented santash_run_counter_total metric!")
 }
 
 func setupCounter(ctx context.Context) func(context.Context) error {
 	serviceName := os.Getenv("K_SERVICE")
 	if serviceName == "" {
-		serviceName = "sample-cloud-run-app"
+		serviceName = "cloud-run-app"
 	}
 	r, err := resource.Merge(
 		resource.Default(),
@@ -64,7 +64,7 @@ func setupCounter(ctx context.Context) func(context.Context) error {
 	)
 
 	meter := provider.Meter("example.com/metrics")
-	counter, err = meter.Int64Counter("santash-sample-counter")
+	counter, err = meter.Int64Counter("santash-run-counter")
 	if err != nil {
 		log.Fatalf("Error creating counter: %s", err)
 	}
