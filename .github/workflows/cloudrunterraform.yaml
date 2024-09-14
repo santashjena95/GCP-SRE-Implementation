@@ -52,6 +52,9 @@ jobs:
         github-token: ${{ secrets.GH_PAT }}
         run-id: ${{ steps.get-run-id.outputs.run-id }}
 
+    - name: Show downloaded files
+      run: ls -la
+
     - name: Read SHA from file
       id: get-sha
       run: |
