@@ -1,0 +1,5 @@
+project_id                = "sre-project-poc"
+custom_metric_name        = "cloud-run-error"
+email_address_notify      = "santashkjena1307@gmail.com"
+monitoring_display_name   = "Cloud Run Failure"
+notify_subject_line       = "Cloud Run Has Failed Please Check The Logs For Details"

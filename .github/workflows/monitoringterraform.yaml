@@ -1,0 +1,59 @@
+name: TerraformMonitoring
+
+on:
+  workflow_run:
+        workflows: ["TerraformCloudRun"]
+        types:
+          - completed
+  push:
+    branches: [ "main" ]
+    paths:
+      - monitoring_terraform/**
+      - module/monitoring/**
+      - .github/workflows/monitoringterraform.yaml
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - monitoring_terraform/**
+      - module/monitoring/**
+      - .github/workflows/monitoringterraform.yaml
+  # For running Github actions manually from UI
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: 'terraform-monitoring'
+    runs-on: ubuntu-latest
+    environment: production
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: monitoring_terraform
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      run: terraform init
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Terraform Validate
+      run: terraform validate
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Terraform Plan
+      run: terraform plan -var-file=dev.tfvars
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Terraform Apply
+      run: terraform apply -var-file=dev.tfvars -auto-approve
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
