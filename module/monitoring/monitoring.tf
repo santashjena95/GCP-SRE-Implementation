@@ -32,7 +32,7 @@ resource "google_logging_metric" "cloud_run_error" {
 
 resource "null_resource" "delay" {
   provisioner "local-exec" {
-    command = "sleep 240"
+    command = "sleep 300"
   }
 }
 
