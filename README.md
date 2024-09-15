@@ -8,7 +8,7 @@
 
 ## 4. Then it will automatically trigger the monitoring terraform module for the deploying custom log based metrics and associated monitoring alert
 
-## NOTE: Permissions needed for service account of terraform for monitoring: Logs Configuration Writer
+## NOTE: Permissions needed for service account of terraform for monitoring: Logs Configuration Writer, Monitoring AlertPolicy Editor
 
 ## Important Docs:
 
