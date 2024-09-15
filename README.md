@@ -8,6 +8,12 @@
 
 ## 4. Then it will automatically trigger the monitoring terraform module for the deploying custom log based metrics and associated monitoring alert
 
+## NOTE: We have two ways of deploying cloud run sidecar containers -
+
+## a. Running "gcloud run services replace service.yaml" command in run_service/ folder that will create cloud run with the otel sidecar container
+
+## b. Running "cloudrunterraform.yaml" github actions workflow (This will be automatically triggered if new code is pushed to app_code/ or collector/ code, which will trigger pushtoartifact.yaml workflow and this will trigger cloudrunterraform.yaml workflow) (Make sure if we are running "cloudrunterraform.yaml" workflow manually, atleast one run for "pushtoartifact.yaml" has already happened as we are utilizing the sha from it for image push and that image is used in cloud run)
+
 ## NOTE: Permissions needed for service account of terraform for monitoring: Logs Configuration Writer, Monitoring AlertPolicy Editor, Monitoring NotificationChannel Editor
 
 ## NOTE: group_by_fields is important for defining log based metrics labels in documentation of monitoring alert policy
