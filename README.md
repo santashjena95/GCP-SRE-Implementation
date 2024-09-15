@@ -1,6 +1,6 @@
 # This repo deploys cloud run using terraform with opentelemetry as sidecar container
 
-## 1. Go to GCP artifact registry and create repository.
+## 1. Go to GCP artifact registry and create repository
 
 ## 2. Then run the github action pipeline for building and pushing the docker image to Google Artifact Registry.
 
@@ -9,6 +9,12 @@
 ## 4. Then it will automatically trigger the monitoring terraform module for the deploying custom log based metrics and associated monitoring alert
 
 ## NOTE: Permissions needed for service account of terraform for monitoring: Logs Configuration Writer, Monitoring AlertPolicy Editor, Monitoring NotificationChannel Editor
+
+## NOTE: group_by_fields is important for defining log based metrics labels in documentation of monitoring alert policy
+
+## NOTE: Before trigerring the image build and push workflow pipeline make sure to create the repos in Google Artifact registry
+
+## NOTE: Added delay of 2 minutes after creating log based metrics as it takes time to register for monitoring alert policy to use it
 
 ## Important Docs:
 
