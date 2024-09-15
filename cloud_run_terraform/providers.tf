@@ -9,7 +9,7 @@ terraform {
     }
     backend "gcs" {
       bucket = "sre-terraform-state-file"
-      prefix = "statefile"
+      prefix = "cloudrunstatefile"
     }
 }
 
