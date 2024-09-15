@@ -33,7 +33,7 @@ func main() {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	counter.Add(context.Background(), 100)
-	fmt.Fprintln(w, "Incremented santash_run_counter_total metric!")
+	fmt.Fprintln(w, "Incremented santash_run_counter_total metric by 100!")
 }
 
 func setupCounter(ctx context.Context) func(context.Context) error {
