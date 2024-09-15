@@ -60,6 +60,7 @@ resource "google_monitoring_alert_policy" "cloud_run_error_alert_policy" {
         alignment_period   = "60s"
         per_series_aligner = "ALIGN_RATE"
         cross_series_reducer = "REDUCE_COUNT"
+        group_by_fields = ["metric.label.msg", "metric.label.run_name"]
       }
     }
   }
