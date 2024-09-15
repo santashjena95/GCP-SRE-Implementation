@@ -35,6 +35,12 @@ resource "google_logging_metric" "cloud_run_error" {
   }
 }
 
+resource "null_resource" "delay" {
+  provisioner "local-exec" {
+    command = "sleep 60"
+  }
+}
+
 resource "google_monitoring_alert_policy" "cloud_run_error_alert_policy" {
   project = var.project_id
   display_name = var.monitoring_display_name
@@ -70,4 +76,5 @@ resource "google_monitoring_alert_policy" "cloud_run_error_alert_policy" {
 
   notification_channels = flatten([google_monitoring_notification_channel.email.name])
   enabled = true
+  depends_on = [null_resource.delay]
 }
