@@ -14,18 +14,13 @@ resource "google_logging_metric" "cloud_run_error" {
   
   label_extractors = {
     "run_name" = "EXTRACT(resource.labels.service_name)"
-    "reason" = "EXTRACT(protoPayload.response.status.conditions.reason)"
-    "msg" = "EXTRACT(protoPayload.response.status.conditions.message)"
+    "msg" = "EXTRACT(protoPayload.status.message)"
   }
   metric_descriptor {
     value_type  = "INT64"
     metric_kind = "DELTA"
     labels {
       key = "run_name"
-      value_type = "STRING"
-    }
-    labels {
-      key = "reason"
       value_type = "STRING"
     }
     labels {
@@ -45,7 +40,7 @@ resource "google_monitoring_alert_policy" "cloud_run_error_alert_policy" {
   project = var.project_id
   display_name = var.monitoring_display_name
   documentation {
-    content = "The $${metric.display_name} of the $${resource.type} $${log.extracted_label.run_name} in $${resource.project} has $${log.extracted_label.msg} Error because of $${log.extracted_label.reason} reason."
+    content = "The $${metric.display_name} of the $${resource.type} $${log.extracted_label.run_name} in $${resource.project} has $${log.extracted_label.msg} Error."
     subject = var.notify_subject_line
   }
   combiner     = "OR"
