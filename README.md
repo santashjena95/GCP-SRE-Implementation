@@ -31,3 +31,5 @@
 ### ix. https://github.com/hashicorp/terraform-provider-google-beta/blob/main/website/docs/r/logging_metric.html.markdown
 
 ### x. https://cloud.google.com/logging/docs/alerting/log-based-alerts#lba-by-api
+
+### xi. https://cloud.google.com/monitoring/alerts/doc-variables
