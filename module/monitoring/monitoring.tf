@@ -39,7 +39,7 @@ resource "google_monitoring_alert_policy" "cloud_run_error_alert_policy" {
   project = var.project_id
   display_name = var.monitoring_display_name
   documentation {
-    content = "The $${metric.display_name} of the $${resource.type} $${resource.label.run_name} in $${resource.project} has $${resource.label.msg} Error because of $${resource.label.reason} reason."
+    content = "The $${metric.display_name} of the $${resource.type} $${log.extracted_label.run_name} in $${resource.project} has $${log.extracted_label.msg} Error because of $${log.extracted_label.reason} reason."
     subject = var.notify_subject_line
   }
   combiner     = "OR"
