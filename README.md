@@ -33,3 +33,5 @@
 ### x. https://cloud.google.com/logging/docs/alerting/log-based-alerts#lba-by-api
 
 ### xi. https://cloud.google.com/monitoring/alerts/doc-variables
+
+### xii. https://stackoverflow.com/questions/59963102/stackdriver-custom-label-usage-in-email-alerts-for-metric-conditions
