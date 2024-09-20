@@ -47,3 +47,5 @@
 ### xi. https://cloud.google.com/monitoring/alerts/doc-variables
 
 ### xii. https://stackoverflow.com/questions/59963102/stackdriver-custom-label-usage-in-email-alerts-for-metric-conditions
+
+### xiii. Youtube Video for environment approval process: https://www.youtube.com/watch?v=w_37LDOy4sI
