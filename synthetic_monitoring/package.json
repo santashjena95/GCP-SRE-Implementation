@@ -1,0 +1,19 @@
+{
+  "name": "synthetic",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "request": "^2.88.2",
+    "@google-cloud/synthetics-sdk-mocha": "^0.1.1",
+    "chai": "^4.3.7",
+    "node-fetch": "^2.6.0",
+    "@google-cloud/functions-framework": "^3.1.2",
+    "axios": "^0.26.0"
+  },
+  "author": "SREDevOps",
+  "license": "Apache-2.0",
+  "engines": {
+    "node" : "20"
+  }
+}
