@@ -27,7 +27,7 @@ describe('Uptime Checks', () => {
                 console.log(`Success Call For ${name}: (${url})`); // Log success
             } catch (error) {
                 // Log the error and fail the test if an exception occurs
-                console.error(`Error and Failedappl call for ${url}: ` + error.message);
+                console.error(`Error and Failed call for ${url}: ` + error.message);
                 assert.fail(`Failed Uptime Check: ${error.message}`);
             }
         });
