@@ -1,8 +1,11 @@
 {
     "endpoints": [
       {
-        "name": "CloudRun1",
-        "url": "https://hello-1058717846530.us-central1.run.app"
-      }
+        "name": "CloudRunService",
+        "url": "https://hello-1058717846530.us-central1.run.app",
+        "auth": {
+          "usernameSecret": "projects/your-project-id/secrets/api-username/versions/latest",
+          "passwordSecret": "projects/your-project-id/secrets/api-password/versions/latest"
+     }
     ]
 }
