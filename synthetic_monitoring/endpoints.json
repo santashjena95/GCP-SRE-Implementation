@@ -6,6 +6,7 @@
         "auth": {
           "usernameSecret": "projects/your-project-id/secrets/api-username/versions/latest",
           "passwordSecret": "projects/your-project-id/secrets/api-password/versions/latest"
-     }
-    ]
+        }
+      }    
+   ]
 }
