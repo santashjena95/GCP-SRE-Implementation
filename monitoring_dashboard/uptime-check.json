@@ -1,0 +1,35 @@
+{
+    "displayName": "Uptime_Check_Dashboard",
+    "gridLayout": {
+      "columns": "2",
+      "widgets": [
+        {
+          "title": "Uptime Check Compliance",
+          "xyChart": {
+            "dataSets": [
+              {
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "select_slo_compliance(\"projects/${PROJECT_ID}/services/${SERVICE_ID}/serviceLevelObjectives/${SLO_ID}\")"
+                  },
+                  "unitOverride": "10^2.%"
+                },
+                "plotType": "LINE"
+              }
+            ],
+            "thresholds": [
+              {
+                "value": 0.9
+              }
+            ],
+            "chartOptions": {
+              "mode": "COLOR"
+            }
+          }
+        }
+      ]
+    }
+  }
