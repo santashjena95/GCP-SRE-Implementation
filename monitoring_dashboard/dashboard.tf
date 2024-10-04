@@ -37,12 +37,12 @@ resource "google_monitoring_slo" "custom_uptime_slo" {
   request_based_sli {
     good_total_ratio {
       good_service_filter = join(" AND ", [
-        "metric.type=\"logging.googleapis.com/user/custom-uptime-check\"",
+        "metric.type=\"logging.googleapis.com/user/custom-uptime-log\"",
         "resource.type=\"cloud_function\"",
         "metric.labels.msg=monitoring.regex.full_match(\"Success.*\")",
       ])
       total_service_filter = join(" AND ", [
-        "metric.type=\"logging.googleapis.com/user/custom-uptime-check\"",
+        "metric.type=\"logging.googleapis.com/user/custom-uptime-log\"",
         "resource.type=\"cloud_function\"",
       ])
     }
