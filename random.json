@@ -1,0 +1,65 @@
+{
+  "displayName": "New Dashboard - Oct 30, 2024 11:12 PM",
+  "mosaicLayout": {
+    "columns": 48,
+    "tiles": [
+      {
+        "widget": {
+          "title": "S2T Test",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesQueryLanguage": "fetch consumer_quota\r\n| filter resource.service == 'compute.googleapis.com'\r\n| { metric serviceruntime.googleapis.com/quota/allocation/usage\r\n    | align next_older(1d)\r\n    | group_by [resource.project_id, metric.quota_metric, resource.location],\r\n        max(val())\r\n  ; metric serviceruntime.googleapis.com/quota/limit\r\n    | filter metric.limit_name == 'CPUS-per-project-region'\r\n    | align next_older(1d)\r\n    | group_by [resource.project_id, metric.quota_metric, resource.location],\r\n        min(val())\r\n  }\r\n| ratio\r\n| every 1m\r\n| condition gt(val(), ${var.cpu_threshold} '1')",
+                  "unitOverride": ""
+                }
+              }
+            ],
+            "thresholds": [],
+            "yAxis": {
+              "label": "",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "height": 16,
+        "width": 24
+      },
+      {
+        "widget": {
+          "title": "2nd S2T Dashboard",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesQueryLanguage": "fetch consumer_quota\r\n| filter resource.service == 'compute.googleapis.com'\r\n| { metric serviceruntime.googleapis.com/quota/allocation/usage\r\n    | align next_older(1d)\r\n    | group_by [resource.project_id, metric.quota_metric, resource.location],\r\n        max(val())\r\n  ; metric serviceruntime.googleapis.com/quota/limit\r\n    | filter metric.limit_name == 'CPUS-per-project-region'\r\n    | align next_older(1d)\r\n    | group_by [resource.project_id, metric.quota_metric, resource.location],\r\n        min(val())\r\n  }\r\n| ratio\r\n| every 1m\r\n| condition gt(val(), ${var.cpu_threshold} '1')",
+                  "unitOverride": ""
+                }
+              }
+            ],
+            "thresholds": [],
+            "yAxis": {
+              "label": "",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "height": 16,
+        "width": 24,
+        "xPos": 24
+      }
+    ]
+  },
+  "dashboardFilters": [],
+  "labels": {}
+}
