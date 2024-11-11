@@ -22,7 +22,7 @@ def query_view(data):
         for row in results:
             print(row['f0_'])  # Do something meaningful with the rows
             count = row['f0_']
-        if count == "2":
+        if count == 2:
             print(f"Data Quality Test Results is: {True}")
         else:
             print(f"Data Quality Test Results is: {False}")
