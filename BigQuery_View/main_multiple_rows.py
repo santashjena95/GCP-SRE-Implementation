@@ -1,9 +1,15 @@
 from google.cloud import bigquery
+import os
+import json
 
 def query_view(data):
-    project_id = 'sre-project-poc'  # Replace with your project ID
-    dataset_id = 'test_dataset'  # Replace with your dataset ID
-    view_id = 'test_table_view'  # Replace with your view ID
+    config_file = os.environ.get("FILE_JSON")
+    with open(config_file, 'r') as file:
+        config = json.load(file)
+ 
+    project_id = config['settings']['project_id']
+    dataset_id = config['settings']['dataset_id']
+    view_id = config['settings']['view_id']
     # Build a BigQuery client object.
     client = bigquery.Client(project=project_id)
 
