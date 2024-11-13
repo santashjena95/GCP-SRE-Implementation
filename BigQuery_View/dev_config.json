@@ -1,0 +1,7 @@
+{
+    "settings" : {
+        "project_id": "sre-project-poc",
+        "dataset_id": "test_dataset",
+        "view_id": "test_table_view"
+    }
+}
