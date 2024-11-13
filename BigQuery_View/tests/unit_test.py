@@ -1,92 +1,93 @@
-import unittest
-from unittest.mock import patch
+import pytest
+from unittest.mock import Mock, patch, mock_open
+import json
+from src.main.main import query_view
 
-from google.cloud import bigquery
+@pytest.fixture
+def mock_config():
+    return {
+        "settings": {
+            "project_id": "test-project",
+            "dataset_id": "test-dataset",
+            "view_id": "test-view"
+        }
+    }
 
-from your_module import query_view
+@pytest.fixture
+def mock_env(monkeypatch):
+    monkeypatch.setenv("FILE_JSON", "mock_config.json")
 
+@pytest.fixture
+def mock_bigquery_client():
+    with patch('src.main.main.bigquery.Client') as mock_client:
+        yield mock_client
 
-class TestQueryView(unittest.TestCase):
-    @patch("google.cloud.bigquery.Client")
-    def test_query_view_success(self, mock_client):
-        # Mock the query job result
-        mock_query_job = mock_client.return_value.query.return_value
-        mock_query_job.result.return_value = [
-            {"Id": 1, "Name": "Vijay"},
-            {"Id": 3, "Name": "John"},
-        ]
+@pytest.fixture
+def mock_open_file(mock_config):
+    return mock_open(read_data=json.dumps(mock_config))
 
-        # Call the function
-        result = query_view(None)
+def test_query_view_success(mock_env, mock_bigquery_client, mock_open_file):
+    # Arrange
+    mock_query_job = Mock()
+    mock_results = [
+        {'Id': '1', 'Name': 'John Doe'},
+        {'Id': '2', 'Name': 'Jane Smith'},
+        {'Id': '3', 'Name': 'Bob Johnson'}
+    ]
+    mock_query_job.result.return_value = mock_results
+    mock_bigquery_client.return_value.query.return_value = mock_query_job
 
-        # Assert the expected output
-        self.assertEqual(result, "Query Executed Successfully...")
-        self.assertEqual(mock_client.call_count, 1)
-        self.assertEqual(mock_client.call_args[0], (("sre-project-poc",),))
-        self.assertEqual(mock_client.return_value.query.call_count, 1)
-        self.assertEqual(
-            mock_client.return_value.query.call_args[0],
-            (
-                (
-                    "SELECT * FROM `sre-project-poc.test_dataset.test_table_view`",
-                    (),
-                ),
-            ),
-        )
+    with patch('builtins.open', mock_open_file):
+        # Act
+        result = query_view({})
 
-    @patch("google.cloud.bigquery.Client")
-    def test_query_view_failure(self, mock_client):
-        # Mock the query job exception
-        mock_query_job = mock_client.return_value.query.return_value
-        mock_query_job.result.side_effect = Exception("Query failed")
+    # Assert
+    assert result == "Query Executed Successfully..."
+    mock_bigquery_client.assert_called_once_with(project='test-project')
+    mock_bigquery_client.return_value.query.assert_called_once_with(
+        "SELECT * FROM `test-project.test-dataset.test-view`"
+    )
+    mock_query_job.result.assert_called_once()
 
-        # Call the function
-        result = query_view(None)
+def test_query_view_failure(mock_env, mock_bigquery_client, mock_open_file, capsys):
+    # Arrange
+    mock_query_job = Mock()
+    mock_query_job.result.side_effect = Exception("Query failed")
+    mock_bigquery_client.return_value.query.return_value = mock_query_job
 
-        # Assert the expected output
-        self.assertEqual(result, "Failed to query the view: Query failed")
-        self.assertEqual(mock_client.call_count, 1)
-        self.assertEqual(mock_client.call_args[0], (("sre-project-poc",),))
-        self.assertEqual(mock_client.return_value.query.call_count, 1)
-        self.assertEqual(
-            mock_client.return_value.query.call_args[0],
-            (
-                (
-                    "SELECT * FROM `sre-project-poc.test_dataset.test_table_view`",
-                    (),
-                ),
-            ),
-        )
+    with patch('builtins.open', mock_open_file):
+        # Act
+        result = query_view({})
 
-    @patch("google.cloud.bigquery.Client")
-    def test_query_view_ceo_output(self, mock_client):
-        # Mock the query job result
-        mock_query_job = mock_client.return_value.query.return_value
-        mock_query_job.result.return_value = [
-            {"Id": 1, "Name": "Vijay"},
-            {"Id": 3, "Name": "John"},
-        ]
+    # Assert
+    assert result == None  # The function doesn't return anything when an exception occurs
+    mock_bigquery_client.assert_called_once_with(project='test-project')
+    mock_bigquery_client.return_value.query.assert_called_once_with(
+        "SELECT * FROM `test-project.test-dataset.test-view`"
+    )
+    mock_query_job.result.assert_called_once()
 
-        # Call the function
-        query_view(None)
+    # Check that the error message was printed
+    captured = capsys.readouterr()
+    assert "Failed to query the view: Query failed" in captured.out
 
-        # Assert the expected output
-        self.assertIn("CEO: Vijay", self.maxDiff)
-        self.assertIn("Normal Employee: John", self.maxDiff)
+def test_query_view_print_output(mock_env, mock_bigquery_client, mock_open_file, capsys):
+    # Arrange
+    mock_query_job = Mock()
+    mock_results = [
+        {'Id': '1', 'Name': 'John Doe'},
+        {'Id': '2', 'Name': 'Jane Smith'},
+        {'Id': '3', 'Name': 'Bob Johnson'}
+    ]
+    mock_query_job.result.return_value = mock_results
+    mock_bigquery_client.return_value.query.return_value = mock_query_job
 
-    @patch("google.cloud.bigquery.Client")
-    def test_query_view_employee_output(self, mock_client):
-        # Mock the query job result
-        mock_query_job = mock_client.return_value.query.return_value
-        mock_query_job.result.return_value = [
-            {"Id": 3, "Name": "John"},
-            {"Id": 4, "Name": "Jane"},
-        ]
+    with patch('builtins.open', mock_open_file):
+        # Act
+        query_view({})
 
-        # Call the function
-        query_view(None)
-
-        # Assert the expected output
-        self.assertNotIn("CEO: John", self.maxDiff)
-        self.assertIn("Normal Employee: John", self.maxDiff)
-        self.assertIn("Normal Employee: Jane", self.maxDiff)
+    # Assert
+    captured = capsys.readouterr()
+    assert "CEO: John Doe" in captured.out
+    assert "CEO: Jane Smith" in captured.out
+    assert "Normal Employee: Bob Johnson" in captured.out
