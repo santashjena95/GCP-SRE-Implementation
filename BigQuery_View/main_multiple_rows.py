@@ -19,13 +19,14 @@ def query_view(data):
         # Construct a full SQL query.
         query = f"SELECT * FROM `{view_ref}`"
 
-        # Execute the query. Wait for the job to finish
-        query_job = client.query(query)
     except Exception as e:
         print(f"Config file not present: {e}")
         return "Not Done"
 
     try:
+        # Execute the query. Wait for the job to finish
+        query_job = client.query(query)
+        
         # Fetch the results and process them
         results = query_job.result()  # Waits for the job to complete
         
