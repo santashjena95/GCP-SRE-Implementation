@@ -110,3 +110,15 @@ def test_query_view_empty_results(mock_env, mock_bigquery_client, mock_open_file
     assert "Query Executed Successfully..." in captured.out
     assert "CEO:" not in captured.out
     assert "Normal Employee:" not in captured.out
+
+def test_query_view_client_creation_failure(mock_env, mock_open_file, capsys):
+    # Arrange
+    with patch('builtins.open', mock_open_file):
+        with patch('src.main.main.bigquery.Client', side_effect=Exception("Client creation failed")):
+            # Act
+            result = query_view({})
+
+    # Assert
+    assert result == "Not Done"
+    captured = capsys.readouterr()
+    assert "Config file not present: Client creation failed" in captured.out
