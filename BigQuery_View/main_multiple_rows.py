@@ -11,16 +11,20 @@ def query_view(data):
         project_id = config['settings']['project_id']
         dataset_id = config['settings']['dataset_id']
         view_id = config['settings']['view_id']
-        client = bigquery.Client(project=project_id)
+        try:
+            client = bigquery.Client(project=project_id)
 
-        # Qualify the view with its dataset and project.
-        view_ref = f"{project_id}.{dataset_id}.{view_id}"
+            # Qualify the view with its dataset and project.
+            view_ref = f"{project_id}.{dataset_id}.{view_id}"
 
-        # Construct a full SQL query.
-        query = f"SELECT * FROM `{view_ref}`"
+            # Construct a full SQL query.
+            query = f"SELECT * FROM `{view_ref}`"
+        except Exception as e:
+            print(f"Failed while establishing connection with BigQuery: {e}")
+            return "Not Done"
 
     except Exception as e:
-        print(f"Config file not present: {e}")
+        print(f"Failed to find Config file or format not correct of the file: {e}")
         return "Not Done"
 
     try:
