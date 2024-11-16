@@ -64,7 +64,7 @@ def test_query_view_config_file_error(mock_env, capsys):
     # Assert
     assert result == "Not Done"
     captured = capsys.readouterr()
-    assert "Config file not present: Config file not found" in captured.out
+    assert "Failed to find Config file or format not correct of the file: Config file not found" in captured.out
 
 def test_query_view_query_failure(mock_env, mock_bigquery_client, mock_open_file, capsys):
     # Arrange
@@ -121,4 +121,4 @@ def test_query_view_client_creation_failure(mock_env, mock_open_file, capsys):
     # Assert
     assert result == "Not Done"
     captured = capsys.readouterr()
-    assert "Config file not present: Client creation failed" in captured.out
+    assert "Failed while establishing connection with BigQuery: Client creation failed" in captured.out
