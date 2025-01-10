@@ -50,7 +50,7 @@ def read_query_from_file(file_path):
         return file.read()
 
 def execution_start(request):
-    project_id = 'turnkey-cove-443706-t1'
+    project_id = ''
     log_name = 'cloudfunctions.googleapis.com%2Fcloud-functions'
     today = str(date.today())
     bucket_name = "sensor_data_input_demo"
