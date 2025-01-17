@@ -30,13 +30,15 @@ def list_logs(project_id, log_name, today):
     client = logging.Client(project=project_id)
     extract_time = today+"T00:00:00.000Z"
     time_filter = f'timestamp>="{extract_time}"'
-    filter_str = f'resource.type="cloud_function" AND textPayload =~ "Total records retrieved from PR2:*" AND logName="projects/{project_id}/logs/{log_name}" AND {time_filter}'
+    filter_str = f'resource.type="cloud_function" AND textPayload =~ "Total records retrieved from PR2:*" AND logName="projects/{project_id}/logs/{log_name}" AND resource.labels.function_name="bigquery-poc" AND {time_filter}'
 
     for entry in client.list_entries(filter_=filter_str):
-        timestamp = entry.timestamp.isoformat()
-        number_str = entry.payload.split(": ")[1]
-        number = int(number_str)
-        return number
+        try:
+            number_str = entry.payload.split(": ")[1]
+            number = int(number_str)
+            return number
+        except IndexError as e:
+            return 0
 
 def execute_query(project_id, query):
     client = bigquery.Client(project=project_id)
@@ -49,9 +51,9 @@ def execute_bigquery_count(query, project_id):
     client = bigquery.Client(project=project_id)
     query_job = client.query(query)
     results = query_job.result()
-    for row in results:
-        count_value = row['f0_']
-        return count_value
+    df = results.to_dataframe()
+    count = df['interaction_id'].count()
+    return df,count
 
 def read_query_from_file(file_path):
     with open(file_path, 'r') as file:
@@ -59,14 +61,10 @@ def read_query_from_file(file_path):
 
 def formatted_query(today, formatted_guids, message_like):
     query = """
-    SELECT DISTINCT interaction_id, message 
-    FROM `voice_surv_stt.voice_surv_transcript_audit` 
-    WHERE insertion_date BETWEEN DATETIME("{}") AND DATETIME_ADD(DATETIME("{}"), INTERVAL 1 DAY) 
-    AND request_guid IN ({})
-    AND status="Failed"
-    AND message LIKE "%{}"
+    SELECT * FROM `dataproc_gcs_to_bq.interaction_message`
+    WHERE message like "%{}"
     """
-    formatted_query = query.format(today, today, formatted_guids, message_like)
+    formatted_query = query.format(message_like)
     return formatted_query
 
 def execution_start():
@@ -75,8 +73,7 @@ def execution_start():
     today = str(date.today())
     bucket_name = "sensor_data_input_demo"
     destination_blob_name = "sensor_data_"+today+".csv"
-    # log_num = list_logs(project_id, log_name, today)
-    log_num = 1
+    log_num = list_logs(project_id, log_name, today)
     if log_num:
         query_file_path = 'execute.sql'
         sql_query = read_query_from_file(query_file_path)
@@ -96,45 +93,21 @@ def execution_start():
 
         request_guid_list = df['request_guid'].astype(str).tolist()
         formatted_guids = '"' + '","'.join(request_guid_list) + '"'
-        # count_query = """
-        # SELECT count(request_guid)
-        # FROM `dataproc_gcs_to_bq.sample_python_table`
-        # """
-        # query_count_result = execute_bigquery_count(count_query, project_id)
-        # print(query_count_result)
-        # end_offset_error_query = """
-        # SELECT DISTINCT interaction_id, message 
-        # FROM `voice_surv_stt.voice_surv_transcript_audit` 
-        # WHERE insertion_date BETWEEN DATETIME("{}") AND DATETIME_ADD(DATETIME("{}"), INTERVAL 1 DAY) 
-        # AND request_guid IN ({})
-        # AND status="Failed"
-        # AND message LIKE "%construct_transcript_json: 'endOffset'"
-        # """
+        
         formatted_end_offset_error_query = formatted_query(today, formatted_guids, "construct_transcript_json: 'endOffset'")
-        print(formatted_end_offset_error_query)
-        # end_offset_error_count = execute_bigquery_count(formatted_end_offset_error_query, project_id)
-        # google_alternate_error_query = """
-        # SELECT DISTINCT interaction_id, message 
-        # FROM `voice_surv_stt.voice_surv_transcript_audit` 
-        # WHERE insertion_date BETWEEN DATETIME("{}") AND DATETIME_ADD(DATETIME("{}"), INTERVAL 1 DAY) 
-        # AND request_guid IN ({})
-        # AND status="Failed"
-        # AND message LIKE "%generated transcript."
-        # """
-        # formatted_google_alternate_error_query = google_alternate_error_query.format(today, today, formatted_guids)
-        # google_alternate_error_count = execute_bigquery_count(formatted_google_alternate_error_query, project_id)
-        # zero_sec_call_error_query = """
-        # SELECT DISTINCT interaction_id, message 
-        # FROM `voice_surv_stt.voice_surv_transcript_audit` 
-        # WHERE insertion_date BETWEEN DATETIME("{}") AND DATETIME_ADD(DATETIME("{}"), INTERVAL 1 DAY) 
-        # AND request_guid IN ({})
-        # AND status="Failed"
-        # AND message LIKE "%transcript not exist"
-        # """
-        # formatted_zero_sec_call_error_query = zero_sec_call_error_query.format(today, today, formatted_guids)
-        # zero_sec_call_error_count = execute_bigquery_count(formatted_zero_sec_call_error_query, project_id)
+        df_end_offset_error,end_offset_error_count = execute_bigquery_count(formatted_end_offset_error_query, project_id)
+
+        formatted_zero_sec_error_query = formatted_query(today, formatted_guids, "ffmpeg exited with code 1")
+        df_zero_sec_call_error,zero_sec_call_error_count = execute_bigquery_count(formatted_zero_sec_error_query, project_id)
+        
+        formatted_google_alternate_error_query = formatted_query(today, formatted_guids, "generated transcript")
+        df_google_alternate_error,google_alternate_error_count = execute_bigquery_count(formatted_google_alternate_error_query, project_id)
+
+        dataframe = pd.concat([df_end_offset_error, df_zero_sec_call_error, df_google_alternate_error], ignore_index=True)
+        print(dataframe)
+
         #create_and_upload_csv(sum_interaction_ids, sum_trs_interactions_success, sum_difference, percent_failed, bucket_name, destination_blob_name, project_id, order_date, today, google_alternate_error_count, zero_sec_call_error_count, end_offset_error_count)
     else:
-        print('No "Total records retrieved from PR2:" logs present for today')
+        print('Not')
 
 execution_start()
