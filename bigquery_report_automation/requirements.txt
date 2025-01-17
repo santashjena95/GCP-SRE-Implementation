@@ -2,3 +2,4 @@ google-cloud-bigquery
 pandas
 google-cloud-logging
 google-cloud-storage
+db_dtypes
