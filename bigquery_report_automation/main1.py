@@ -3,6 +3,7 @@ from google.cloud import bigquery
 from google.cloud import storage
 import pandas as pd
 from datetime import date, timedelta
+import db_dtypes
 
 def create_and_upload_csv(sum_interaction_ids, sum_trs_interactions_success, sum_difference, percent_failed, bucket_name, destination_blob_name, project_id, order_date, today, google_alternate_error_count, zero_sec_call_error_count, end_offset_error_count):
 
