@@ -41,6 +41,7 @@ def list_logs(project_id, log_name, today):
             return number
         except IndexError as e:
             return 0
+    return 0
 
 def execute_query(project_id, query):
     client = bigquery.Client(project=project_id)
