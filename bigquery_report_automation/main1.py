@@ -29,8 +29,9 @@ def create_and_upload_csv(sum_interaction_ids, sum_trs_interactions_success, sum
 def list_logs(project_id, log_name, today):
     
     client = logging.Client(project=project_id)
-    extract_time = today+"T00:00:00.000Z"
-    time_filter = f'timestamp>="{extract_time}"'
+    extract_time_start = today+"T00:00:00.000Z"
+    extract_time_end = today+"T23:59:59.999Z"
+    time_filter = f'timestamp>="{extract_time_start}" AND timestamp<="{extract_time_end}"'
     filter_str = f'resource.type="cloud_function" AND textPayload =~ "Total records retrieved from PR2:*" AND logName="projects/{project_id}/logs/{log_name}" AND resource.labels.function_name="bigquery-poc" AND {time_filter}'
 
     for entry in client.list_entries(filter_=filter_str):
@@ -56,9 +57,11 @@ def execute_bigquery_count(query, project_id):
     count = df['interaction_id'].count()
     return df,count
 
-def read_query_from_file(file_path):
+def read_query_from_file(file_path, process_date):
     with open(file_path, 'r') as file:
-        return file.read()
+        file_content = file.read()
+        updated_content = file_content.replace('update_process_date', process_date)
+        return updated_content
 
 def formatted_query(today, formatted_guids, message_like):
     query = """
@@ -77,7 +80,7 @@ def execution_start():
     log_num = list_logs(project_id, log_name, today)
     if log_num:
         query_file_path = 'execute.sql'
-        sql_query = read_query_from_file(query_file_path)
+        sql_query = read_query_from_file(query_file_path, today)
         df = execute_query(project_id, sql_query)
         df['interaction_ids'] = pd.to_numeric(df['interaction_ids'])
         sum_interaction_ids = int(df['interaction_ids'].sum())
