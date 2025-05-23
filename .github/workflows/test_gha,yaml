@@ -1,0 +1,98 @@
+name: Run Composer DAG Task
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select Environment'
+        required: true
+        type: choice
+        options:
+        - dev
+        - cuat
+        - prod
+      composer_env:
+        description: 'Composer Environment Name'
+        required: true
+        type: string
+      dag_id:
+        description: 'DAG ID'
+        required: true
+        type: string
+      execution_date:
+        description: 'Execution Date (YYYY-MM-DD)'
+        required: true
+        type: string
+
+jobs:
+  get-inputs:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" =~ ^(cuat|prod)$ ]]; then
+            echo "matrix=$(cat <<EOF
+            {
+              "include": [
+                {
+                  "task_id": {
+                    "description": "Task ID",
+                    "required": true,
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+            EOF)" >> $GITHUB_OUTPUT
+          else
+            echo "matrix={}" >> $GITHUB_OUTPUT
+          fi
+
+  run-composer-task:
+    needs: get-inputs
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Run Specific Task (CUAT/PROD)
+      if: github.event.inputs.environment == 'cuat' || github.event.inputs.environment == 'prod'
+      run: |
+        echo "Running specific task in ${{ github.event.inputs.environment }}"
+        gcloud composer environments run ${{ github.event.inputs.composer_env }} \
+          --location ${{ secrets.GCP_REGION }} \
+          test -- \
+          ${{ github.event.inputs.dag_id }} \
+          ${{ fromJson(needs.get-inputs.outputs.matrix).include[0].task_id }} \
+          ${{ github.event.inputs.execution_date }}
+
+    - name: Run Full DAG (DEV)
+      if: github.event.inputs.environment == 'dev'
+      run: |
+        echo "Running full DAG in DEV environment"
+        gcloud composer environments run ${{ github.event.inputs.composer_env }} \
+          --location ${{ secrets.GCP_REGION }} \
+          trigger_dag -- \
+          ${{ github.event.inputs.dag_id }} \
+          --execution_date=${{ github.event.inputs.execution_date }}
+
+    - name: Check Execution Status
+      if: always()
+      run: |
+        if [[ "${{ job.status }}" == "success" ]]; then
+          echo "Execution completed successfully"
+        else
+          echo "Execution failed"
+          exit 1
+        fi
