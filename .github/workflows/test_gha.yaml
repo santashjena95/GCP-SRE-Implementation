@@ -19,10 +19,6 @@ on:
         description: 'DAG ID'
         required: true
         type: string
-      execution_date:
-        description: 'Execution Date (YYYY-MM-DD)'
-        required: true
-        type: string
 
 jobs:
   get-inputs:
