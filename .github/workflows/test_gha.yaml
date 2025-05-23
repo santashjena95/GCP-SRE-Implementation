@@ -21,33 +21,29 @@ on:
         type: string
 
 jobs:
-  get-inputs:
+  process-inputs:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      task_id: ${{ steps.get-task-id.outputs.task_id }}
+      needs_task: ${{ steps.check-env.outputs.needs_task }}
     steps:
-      - id: set-matrix
+      - id: check-env
         run: |
           if [[ "${{ github.event.inputs.environment }}" =~ ^(cuat|prod)$ ]]; then
-            echo "matrix=$(cat <<EOF
-            {
-              "include": [
-                {
-                  "task_id": {
-                    "description": "Task ID",
-                    "required": true,
-                    "type": "string"
-                  }
-                }
-              ]
-            }
-            EOF)" >> $GITHUB_OUTPUT
+            echo "needs_task=true" >> $GITHUB_OUTPUT
           else
-            echo "matrix={}" >> $GITHUB_OUTPUT
+            echo "needs_task=false" >> $GITHUB_OUTPUT
           fi
 
+      - id: get-task-id
+        if: steps.check-env.outputs.needs_task == 'true'
+        run: |
+          echo "Please enter Task ID:"
+          read TASK_ID
+          echo "task_id=$TASK_ID" >> $GITHUB_OUTPUT
+
   run-composer-task:
-    needs: get-inputs
+    needs: process-inputs
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment }}
 
@@ -65,13 +61,17 @@ jobs:
     - name: Run Specific Task (CUAT/PROD)
       if: github.event.inputs.environment == 'cuat' || github.event.inputs.environment == 'prod'
       run: |
+        if [ -z "${{ needs.process-inputs.outputs.task_id }}" ]; then
+          echo "Error: Task ID is required for CUAT/PROD environments"
+          exit 1
+        fi
+        
         echo "Running specific task in ${{ github.event.inputs.environment }}"
         gcloud composer environments run ${{ github.event.inputs.composer_env }} \
           --location ${{ secrets.GCP_REGION }} \
           test -- \
           ${{ github.event.inputs.dag_id }} \
-          ${{ fromJson(needs.get-inputs.outputs.matrix).include[0].task_id }} \
-          ${{ github.event.inputs.execution_date }}
+          ${{ needs.process-inputs.outputs.task_id }}
 
     - name: Run Full DAG (DEV)
       if: github.event.inputs.environment == 'dev'
